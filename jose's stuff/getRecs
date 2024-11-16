@@ -1,6 +1,3 @@
-import cv2
-import numpy as np
-
 clothing = {
     'preppy': {
         'paleWhite': [1, 2, 3],
@@ -40,9 +37,9 @@ def getColor(i):
     colors = ['paleWhite', 'white', 'mediumWhite', 'olive', 'lightBrown', 'darkBrown']
     return colors[i]
 def getRecs():
-    i = 2
+    i = 2           # i is from Abhay's stuff
     color = getColor(i)
-    style = 'preppy'
+    style = 'preppy'    # result from Funmi's model
     return clothing[style][color]
 
 print(getRecs())
