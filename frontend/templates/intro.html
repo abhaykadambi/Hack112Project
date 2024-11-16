@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/styles.css">
+    <title>Job Matcher</title>
+</head>
+<body>
+    <div id="intro-section">
+        <h1>Find Your Dream Job</h1>
+        <form id="intro-form">
+            <label for="state">Where would you want to work (state)?</label>
+            <input type="text" id="state" name="state" required>
+            
+            <label for="position">What position are you searching for?</label>
+            <input type="text" id="position" name="position" required>
+            
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+
+    <div id="matching-section">
+        <div id="card-container">
+            {% for profile in profiles %}
+                <div class="card" data-name="{{ profile.name }}" data-job="{{ profile.job }}">
+                    <div class="card-image" style="background-image: url('{{ profile.image }}')"></div>
+                    <div class="card-info">
+                        <h3>{{ profile.name }}</h3>
+                        <p>{{ profile.job }}</p>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script>
+    <script>
+        const introForm = document.getElementById('intro-form');
+        const matchingSection = document.getElementById('matching-section');
+
+        introForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const state = document.getElementById('state').value;
+            const position = document.getElementById('position').value;
+
+            // Save answers for API call
+            await fetch('/submit', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ state, position })
+            });
+
+            // Scroll to matching section
+            matchingSection.scrollIntoView({ behavior: 'smooth' });
+        });
+
+        // Add swipe functionality for matching cards
+        const cards = document.querySelectorAll('.card');
+        cards.forEach(card => {
+            const hammer = new Hammer(card);
+
+            hammer.on('swipeleft', () => {
+                card.style.transform = 'translateX(-100vw)';
+                setTimeout(() => card.remove(), 300);
+            });
+
+            hammer.on('swiperight', async () => {
+                card.style.transform = 'translateX(100vw)';
+                const name = card.dataset.name;
+                const job = card.dataset.job;
+
+                await fetch('/matching', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, job })
+                });
+
+                setTimeout(() => card.remove(), 300);
+            });
+        });
+    </script>
+</body>
+</html>
