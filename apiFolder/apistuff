@@ -1,0 +1,23 @@
+import requests
+
+api_key = 'cZhem_FvSZoBUNV_QZM1Ag'
+headers = {'Authorization': 'Bearer ' + api_key}
+api_endpoint = 'https://nubela.co/proxycurl/api/v2/linkedin'
+params = {
+    'linkedin_profile_url': 'https://linkedin.com/in/johnrmarty/',
+    'skills': 'include',
+}
+response = requests.get(api_endpoint,
+                        params=params,
+                        headers=headers)
+profileData = response.json()
+
+def getInfo(profileData):
+    full_Name = profileData['full_name']
+    occupation = profileData['occupation']
+    location = profileData['state']
+    profilePic = profileData['profile_pic_url']
+    industry = profileData['industry']
+    return([full_Name, occupation, location, profilePic, industry])
+
+print(getInfo(profileData))
