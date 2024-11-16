@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div id="matching-section">
+    <div id="card-container">
+        {% for profile in profiles %}
+        <div class="card" data-name="{{ profile.name }}" data-job="{{ profile.job }}">
+            <div class="card-image" style="background-image: url('{{ profile.image }}')"></div>
+            <div class="card-info">
+                <h3>{{ profile.name }}</h3>
+                <p>{{ profile.job }}</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Add this just before the closing </body> tag -->
+<script>
+    const cards = document.querySelectorAll('.card');
+    const body = document.querySelector('body');
+
+    // Handle card click to enlarge
+    cards.forEach(card => {
+        card.addEventListener('click', () => {
+            card.classList.add('enlarged'); // Enlarge the card
+            card.querySelector('.back-button').style.display = 'block'; // Show the back button
+        });
+    });
+
+    // Handle back button click to shrink the card
+    const backButtons = document.querySelectorAll('.back-button');
+    backButtons.forEach(button => {
+        button.addEventListener('click', (event) => {
+            event.stopPropagation(); // Prevent the event from triggering on the card itself
+            const card = button.closest('.card'); // Get the closest card to the button
+            card.classList.remove('enlarged'); // Shrink the card back to normal size
+            button.style.display = 'none'; // Hide the back button
+        });
+    });
+
+    // Handle right swipe and glowing effect (existing functionality)
+    cards.forEach(card => {
+        card.addEventListener('transitionend', (event) => {
+            if (card.classList.contains('swiped-right')) {
+                body.classList.add('glow-effect');
+                setTimeout(() => {
+                    body.classList.remove('glow-effect');
+                }, 500);
+            }
+        });
+    });
+</script>
+
+{% endblock %}

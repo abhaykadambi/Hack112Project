@@ -1,10 +1,10 @@
 from flask import Flask, render_template, request, jsonify
 
 app = Flask(__name__)
-app.secret_key = "secret-key"
 
-# Temporary storage for answers
+# Temporary storage for answers and matches
 answers = {"state": "", "position": ""}
+matches = []
 
 # Sample profiles for matching
 profiles = [
@@ -13,13 +13,9 @@ profiles = [
     {"name": "Charlie", "job": "Product Manager", "image": "https://via.placeholder.com/300x400"},
 ]
 
-matches = []
-
-
 @app.route('/')
 def home():
     return render_template('intro.html', profiles=profiles)
-
 
 @app.route('/submit', methods=['POST'])
 def submit():
@@ -29,15 +25,14 @@ def submit():
     answers["position"] = data.get("position")
     return jsonify({"message": "Answers saved"}), 200
 
-
 @app.route('/matching', methods=['POST'])
 def matching():
     if request.method == 'POST':
-        profile = request.json
-        matches.append(profile)
+        data = request.json
+        # Add the matched profile to the matches list
+        matches.append(data)
         return jsonify({"message": "Added to matches"}), 200
     return render_template('matching.html', profiles=profiles)
-
 
 if __name__ == '__main__':
     app.run(debug=True)
